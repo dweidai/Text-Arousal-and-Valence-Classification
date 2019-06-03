@@ -8,6 +8,8 @@ from sklearn import preprocessing
 from sklearn.ensemble import BaggingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
+from matplotlib.pyplot import imshow
+from PIL import Image
 
 '''
 The goal of the project is to do a multi-class emotion classification
@@ -133,7 +135,7 @@ class Application(tk.Frame):
                 intercept_scaling=1, max_iter=10000, multi_class='warn', n_jobs=None, penalty='l2',
                 random_state=0, solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)
 
-        self.cls_arousal = LogisticRegression(C=5, class_weight='balanced', dual=False, fit_intercept=True,
+        self.cls_arousal = LogisticRegression(C=10, class_weight='balanced', dual=False, fit_intercept=True,
                 intercept_scaling=1, max_iter=10000,multi_class='warn', n_jobs=None, penalty='l2',
                 random_state=0,solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)
 
@@ -249,27 +251,29 @@ class Application(tk.Frame):
         valence = valence_np.tolist()
         arousal = arousal_np.tolist()
         self.S_train = sentence
-        v_train = valence
-        a_train = arousal
-
+        self.v_train = valence
+        self.a_train = arousal
+        print("The training dataset size is: " + str(len(self.S_train)))
         print("Start Preprocessing...")
         self.count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
-        trainX = self.count_vect.fit_transform(self.S_train)
-        le = preprocessing.LabelEncoder()
-        le.fit(v_train)
-        target_labels = le.classes_
-        trainy = le.transform(v_train)
+        self.trainX = self.count_vect.fit_transform(self.S_train)
+        self.le = preprocessing.LabelEncoder()
+        self.le.fit(self.v_train)
+        self.target_labels = self.le.classes_
+        self.trainy = self.le.transform(self.v_train)
         print("Done Preprocessing")
         print("Start Training for valence classification")
-        self.cls_valence = train_classifier_valence(trainX, trainy)
-        le_a = preprocessing.LabelEncoder()
-        le_a.fit(a_train)
-        target_labels_a = le_a.classes_
-        trainy = le_a.transform(a_train)
-        le_a = preprocessing.LabelEncoder()
+        self.cls_valence.fit(self.trainX, self.trainy)
+        #self.cls_valence = train_classifier_valence(self.trainX, self.trainy)
+        self.le_a = preprocessing.LabelEncoder()
+        self.le_a.fit(self.a_train)
+        self.target_labels_a = self.le_a.classes_
+        self.trainy = self.le_a.transform(self.a_train)
+        self.le_a = preprocessing.LabelEncoder()
         print("Done valence classification")
         print("Start Training for arousal classification")
-        self.cls_arousal = train_classifier_arousal(trainX, trainy)
+        self.cls_arousal.fit(self.trainX, self.trainy)
+        #self.cls_arousal = train_classifier_arousal(self.trainX, self.trainy)
         print("Done Training")
         print()
         print("_____________________________________________")
@@ -280,15 +284,21 @@ class Application(tk.Frame):
         print("Your input is")
         print(self.test_list[0])
         print("Our prediction is:")
+        print(lr_v)
+        print(lr_a)
         if(lr_v == 1 and lr_a == 1):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg', 'r')
             print("\tYou are Happy")
         elif(lr_v == 1 and lr_a == 0):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.jpeg', 'r')
             print("\tYou are just Chilling")
         elif(lr_v == 0 and lr_a == 1):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.jpeg', 'r')
             print("\tYou are really Displeased or Pissed")
         elif(lr_v == 0 and lr_a == 0):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.jpeg', 'r')
             print("\tYou are Bored or you are Sad")
-
+        pil_im.show()
 
     def predict(self):
         #count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
@@ -298,18 +308,26 @@ class Application(tk.Frame):
         test = self.count_vect.transform(self.test_list)
         lr_v = self.cls_valence.predict(test)
         lr_a = self.cls_arousal.predict(test)
+        print(lr_v)
+        print(lr_a)
         print("Your input is")
         print("\t" + self.test_list[0])
         self.count += 1
         print("Our prediction is:")
         if(lr_v == 1 and lr_a == 1):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg', 'r')
             print("\tYou are Happy")
         elif(lr_v == 1 and lr_a == 0):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.jpeg', 'r')
             print("\tYou are just Chilling")
         elif(lr_v == 0 and lr_a == 1):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.jpeg', 'r')
             print("\tYou are really Displeased or Pissed")
         elif(lr_v == 0 and lr_a == 0):
+            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.jpeg', 'r')
             print("\tYou are Bored or you are Sad")
+        pil_im.show()
+
 
 root = tk.Tk()
 root.geometry("400x300")
