@@ -63,10 +63,7 @@ def tokenize(sentence):
                 'yourselves', 'then', 'that', 'because', 'what', 'over', 'so', 'can', 'did', 'now', 'under', 'he', 'you',
                 'herself', 'has', 'just', 'where', 'myself', 'which', 'those', 'i', 'after', 'few', 'whom', 't', 'being', 'if',
                 'theirs', 'my', 'against', 'a', 'by', 'doing', 'it', 'how', 'further', 'was', 'here', 'than', 's', 't', 'can', 'will',
-                'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't",
-                'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't", 'haven', "haven't",
-                'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn',
-                "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"]
+                'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren']
     middle_words = set(dict.fromkeys([stemmer.stem(word) for word in middle_words]))
     tokens = tokenizer.tokenize(sentence)
     for w in middle_words:
@@ -78,7 +75,7 @@ def tokenize(sentence):
 #this is the basic logistic regression
 #same as the PA2
 def train_classifier_valence(X, y):
-    '''
+
     param_grid = {'C': [1, 5, 10, 25]}
     print("grid search start")
     grid = GridSearchCV(LogisticRegression(random_state=0, solver='lbfgs',class_weight = 'balanced', max_iter=10000),
@@ -94,15 +91,26 @@ def train_classifier_valence(X, y):
     cls = LogisticRegression(C=5, class_weight='balanced', dual=False,
           fit_intercept=True, intercept_scaling=1, max_iter=10000,
           multi_class='warn', n_jobs=None, penalty='l2', random_state=0,
-          solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)
+          solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)'''
     cls.fit(X, y)
     return cls
 
 def train_classifier_arousal(X, y):
+    param_grid = {'C': [1, 5, 10, 25]}
+    print("grid search start")
+    grid = GridSearchCV(LogisticRegression(random_state=0, solver='lbfgs',class_weight = 'balanced', max_iter=10000),
+                param_grid, cv=5)
+    print("done grid search")
+    grid.fit(X, y)
+    print("Best cross-validation score: {:.2f}".format(grid.best_score_))
+    print("Best parameters: ", grid.best_params_)
+    print("Best estimator: ", grid.best_estimator_)
+    cls = grid.best_estimator_
+    '''
     cls = LogisticRegression(C=10, class_weight='balanced', dual=False,
           fit_intercept=True, intercept_scaling=1, max_iter=10000,
           multi_class='warn', n_jobs=None, penalty='l2', random_state=0,
-          solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)
+          solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)'''
     cls.fit(X,y)
     return cls
 
@@ -166,10 +174,12 @@ class Application(tk.Frame):
 
     def train_classifier(self):
         print("Training starts\n")
-
         df = pd.read_csv('/Users/apple/Desktop/CSE 156/final_cse156/text_emotion.csv', encoding='latin_1')
+        emo = pd.read_csv('/Users/apple/Desktop/CSE 156/final_cse156/emo.csv', encoding='latin_1')
         df.dropna()
         df_list = [df.columns.values.astype('U').tolist()] + df.values.tolist()
+        emo.dropna()
+        emo_list = [emo.columns.values.astype('U').tolist()] + emo.values.tolist()
         df_sentence = [df_list[x+1][1] for x in range(len(df_list)-1)]
         emotion = [df_list[x+1][0] for x in range(len(df_list)-1)]
         valence_3 = np.zeros(len(emotion))
@@ -217,9 +227,6 @@ class Application(tk.Frame):
         df_sentence = one_one + zero_zero + zero_one + one_zero
         print("Done processing first file\n")
         print("Processing second file")
-        emo = pd.read_csv('emo.csv', encoding='latin_1')
-        emo.dropna()
-        emo_list = [emo.columns.values.astype('U').tolist()] + emo.values.tolist()
         valence_1 = np.zeros(len(emo_list)-1)
         arousal_1 = np.zeros(len(emo_list)-1)
         i = 1
@@ -246,8 +253,8 @@ class Application(tk.Frame):
         a_train = arousal
 
         print("Start Preprocessing...")
-        count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
-        trainX = count_vect.fit_transform(self.S_train)
+        self.count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
+        trainX = self.count_vect.fit_transform(self.S_train)
         le = preprocessing.LabelEncoder()
         le.fit(v_train)
         target_labels = le.classes_
@@ -267,7 +274,7 @@ class Application(tk.Frame):
         print()
         print("_____________________________________________")
         print("\n\nTHIS IS AN EXAMPLE\n")
-        test = count_vect.transform(self.test_list)
+        test = self.count_vect.transform(self.test_list)
         lr_v = self.cls_valence.predict(test)
         lr_a = self.cls_arousal.predict(test)
         print("Your input is")
@@ -284,11 +291,11 @@ class Application(tk.Frame):
 
 
     def predict(self):
-        count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
-        print("fitting to model")
-        trainX = count_vect.fit_transform(self.S_train)
+        #count_vect = TfidfVectorizer(ngram_range=(1,3), tokenizer=tokenize)
+        #print("fitting to model")
+        #trainX = self.count_vect.fit_transform(self.S_train)
         print("Predicting........")
-        test = count_vect.transform(self.test_list)
+        test = self.count_vect.transform(self.test_list)
         lr_v = self.cls_valence.predict(test)
         lr_a = self.cls_arousal.predict(test)
         print("Your input is")
