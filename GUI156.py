@@ -210,9 +210,47 @@ def train_classifier(X, y):
     cls = grid.best_estimator_
     cls.fit(X, y)
     return cls
+def train_classifier_valence(X, y):
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import GridSearchCV
+    '''param_grid = {'C': [1, 5, 10, 25]}
+        print("grid search start")
+        grid = GridSearchCV(LogisticRegression(random_state=0, solver='lbfgs', class_weight='balanced', max_iter=10000),
+        param_grid, cv=5)
+        print("done grid search")
+        grid.fit(X, y)
+        print("Best cross-validation score: {:.2f}".format(grid.best_score_))
+        print("Best parameters: ", grid.best_params_)
+        print("Best estimator: ", grid.best_estimator_)'''
+    cls = LogisticRegression(C=5, class_weight='balanced', dual=False,
+                             fit_intercept=True, intercept_scaling=1, max_iter=10000,
+                             multi_class='warn', n_jobs=None, penalty='l2', random_state=0,
+                             solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)#grid.best_estimator_
+    cls.fit(X, y)
+    return cls
+
+def train_classifier_arousal(X, y):
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import GridSearchCV
+    '''param_grid = {'C': [1, 5, 10, 25]}
+        print("grid search start")
+        grid = GridSearchCV(LogisticRegression(random_state=0, solver='lbfgs', class_weight='balanced', max_iter=10000),
+        param_grid, cv=5)
+        print("done grid search")
+        grid.fit(X, y)
+        print("Best cross-validation score: {:.2f}".format(grid.best_score_))
+        print("Best parameters: ", grid.best_params_)
+        print("Best estimator: ", grid.best_estimator_)'''
+    cls = LogisticRegression(C=10, class_weight='balanced', dual=False,
+                             fit_intercept=True, intercept_scaling=1, max_iter=10000,
+                             multi_class='warn', n_jobs=None, penalty='l2', random_state=0,
+                             solver='lbfgs', tol=0.0001, verbose=0, warm_start=False)#grid.best_estimator_
+    cls.fit(X, y)
+    return cls
+
 print("Done preprocessing\n")
 print("Start Training valence classifier")
-cls_valence = train_classifier(trainX, trainy)
+cls_valence = train_classifier_valence(trainX, trainy)
 #svc_valence = train_svc(trainX, trainy)
 #bagging_valence = train_bagging(trainX, trainy)
 #cls_random = train_random_forest(trainX, trainy)
@@ -223,7 +261,7 @@ trainy = le_a.transform(a_train)
 print("Done training valence\n")
 print("Start Training arousal classifier")
 le_a = preprocessing.LabelEncoder()
-cls_arousal = train_classifier(trainX, trainy)
+cls_arousal = train_classifier_arousal(trainX, trainy)
 print("\nDone\n")
 print("______________________________________")
 test_list = ['The food is not good, but the music is nice and service is fine']
@@ -243,7 +281,7 @@ elif(lr_v == 0 and lr_a == 0):
 
 print("\n\n\n\nREADY TO ROLL!!!\n")
 import tkinter as tk
-from PIL import Image
+from PIL import ImageTk, Image
 #this is the application class for the GUI
 class Application(tk.Frame):
     #TODO
@@ -283,7 +321,12 @@ class Application(tk.Frame):
         self.run["text"] = "Click to Predict\n"
         self.run["command"] = self.predict
         self.run.pack(side="top")
-
+        
+        self.img = ImageTk.PhotoImage(Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg'))
+        self.panel = tk.Label(window, image = img)
+        #The Pack geometry manager packs widgets in rows or columns.
+        self.panel.pack(side = "top")
+        
 
         self.quit = tk.Button(self, text="QUIT", fg="red",
                               command=self.master.destroy)
