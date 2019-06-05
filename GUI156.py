@@ -1,6 +1,6 @@
 import pandas as pd
 print("Loading the first file")
-df = pd.read_csv('text_emotion.csv', encoding='latin_1')
+df = pd.read_csv('text_emotion.csv', encoding='latin_1') #TODO
 df.dropna()
 df.head()
 df_list = [df.columns.values.astype('U').tolist()] + df.values.tolist()
@@ -280,62 +280,117 @@ elif(lr_v == 0 and lr_a == 0):
     print("You are bored or you are sad")
 
 print("\n\n\n\nREADY TO ROLL!!!\n")
+
+def explain_generator(vectorizer, classifier, to_predict, target, result_name):
+    from sklearn.pipeline import make_pipeline
+    c = make_pipeline(vectorizer, classifier)
+    print(to_predict)
+    print(c.predict_proba([to_predict]))
+    
+    from lime.lime_text import LimeTextExplainer
+    explainer = LimeTextExplainer(class_names=target)
+    exp = explainer.explain_instance(to_predict, c.predict_proba, num_features=6)
+    exp.save_to_file(result_name)
+
+
 import tkinter as tk
 from PIL import ImageTk, Image
+import imgkit
+def explain_generator(vectorizer, classifier, to_predict, target, result_name):
+    from sklearn.pipeline import make_pipeline
+    c = make_pipeline(vectorizer, classifier)
+    print(to_predict)
+    print(c.predict_proba([to_predict]))
+    
+    from lime.lime_text import LimeTextExplainer
+    explainer = LimeTextExplainer(class_names=target)
+    exp = explainer.explain_instance(to_predict, c.predict_proba, num_features=6)
+    exp.save_to_file(result_name)
+
 #this is the application class for the GUI
 class Application(tk.Frame):
-    #TODO
-    #here is the prediction input; we are going to have one input at a time
-
+    
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
         self.pack()
         self.create_widgets()
-
+    
     def create_widgets(self):
         self.count = 0
-
+        
         #this is the title
         self.winfo_toplevel().title("CSE 156 Final Project\n")
-
+        
         #this is the first button to train the two classifiers
         self.train = tk.Button(self, text = "Example", fg="red")
         self.train["command"] = self.example
         self.train.pack(side="top")
-
+        
         #here is the instruction
         self.text = tk.Label(self, text=" Please input the sentence you wnat to predict: ")
         self.text.pack()
         #entry here
         self.label = tk.Entry(self, bd=5)
         self.label.pack(side="top", fill="x")
-
+        
         #print(label.get())
         #print(type(label.get()))
         self.ok = tk.Button(self, text = "Confirm Your Phrase", fg="red")
         self.ok["command"] = self.confirm
         self.ok.pack(side = "top")
-
+        
         self.run = tk.Button(self, fg = "red")
         self.run["text"] = "Click to Predict\n"
         self.run["command"] = self.predict
         self.run.pack(side="top")
         
-        self.img = ImageTk.PhotoImage(Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg'))
-        self.panel = tk.Label(window, image = img)
-        #The Pack geometry manager packs widgets in rows or columns.
-        self.panel.pack(side = "top")
+        self.report = tk.Button(self, fg = "red")
+        self.report["text"] = "Click to Predict with Report\n"
+        self.report["command"] = self.report_predict
+        self.report.pack(side="top")
+        '''
+            self.canvas = tk.Canvas(self, width = 300, height = 100)
+            self.img = ImageTk.PhotoImage(file="white.jpg")
+            self.imgArea = self.canvas.create_image(0, 0, image = self.img)
+            self.canvas.pack()'''
         
-
+        self.pred = tk.Label(self, text=" Our prediction will display here: ")
+        self.pred.pack()
+        
+        self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image = self.image.resize((600, 200))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.pic = tk.Label(image=self.photo)
+        self.pic.image = self.photo # keep a reference!
+        self.pic.pack(side = "top")
+        
+        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image1 = self.image1.resize((600, 200))
+        self.photo1 = ImageTk.PhotoImage(self.image1)
+        self.pic1 = tk.Label(image=self.photo1)
+        self.pic1.image = self.photo1 # keep a reference!
+        self.pic1.pack(side = "top")
+        
+        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image2 = self.image2.resize((600, 200))
+        self.photo2 = ImageTk.PhotoImage(self.image2)
+        self.pic2 = tk.Label(image=self.photo2)
+        self.pic2.image = self.photo2 # keep a reference!
+        self.pic2.pack(side = "top")
+        
         self.quit = tk.Button(self, text="QUIT", fg="red",
                               command=self.master.destroy)
+        self.quit["command"] = self.thanks
         self.quit.pack(side="bottom")
 
+    def thanks(self):
+        print("Thanks!!!")
+    
     def confirm(self):
         test_list[0] = self.label.get()
         print(test_list[0])
-
+    
     def example(self):
         print()
         print("_____________________________________________")
@@ -343,54 +398,140 @@ class Application(tk.Frame):
         self.test = count_vect.transform(test_list)
         self.lr_v = cls_valence.predict(self.test)
         self.lr_a = cls_arousal.predict(self.test)
+        #explain_generator(count_vect, cls_valence, test_list[0], ["Positive Valence", "Negative Valence"], "test.html")
+        #explain_generator(count_vect, cls_arousal, test_list[0], ["Positive Aroused", "negative Aroused"], "test2.html")
         print("Your input is")
         print(test_list[0])
         print("Our prediction is:")
         print("Should be: You are just Chilling")
-        print(self.lr_v)
-        print(self.lr_a)
+        #print(self.lr_v)
+        #print(self.lr_a)
         if(self.lr_v == 1 and self.lr_a == 1):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg', 'r')
+            #self.img = ImageTk.PhotoImage(file='/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.pred.config(text="You are Happy ")
             print("\tYou are Happy")
         elif(self.lr_v == 1 and self.lr_a == 0):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.jpeg', 'r')
+            #self.img = ImageTk.PhotoImage(file='/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.pred.config(text="You are just Chilling ")
             print("\tYou are just Chilling")
         elif(self.lr_v == 0 and self.lr_a == 1):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.pred.config(text="You are really Displeased or Pissed ")
             print("\tYou are really Displeased or Pissed")
         elif(self.lr_v == 0 and self.lr_a == 0):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.pred.config(text="You are Bored or just Sad ")
             print("\tYou are Bored or you are Sad")
-        pil_im.show()
+        self.pred.pack()
+        self.image = self.image.resize((100, 100))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.pic.configure(image=self.photo)
+        self.pic.image = self.photo # keep a reference!
+        self.pic.pack(side = "top")
+
+    def report_predict(self):
+        print("Reporting........")
+        self.test = count_vect.transform(test_list)
+        self.lr_v = cls_valence.predict(self.test)
+        self.lr_a = cls_arousal.predict(self.test)
+        explain_generator(count_vect, cls_valence, test_list[0], ["Positive Valence", "Negative Valence"], "test.html")
+        explain_generator(count_vect, cls_arousal, test_list[0], ["Positive Aroused", "negative Aroused"], "test2.html")
+        #print(self.lr_v)
+        #print(self.lr_a)
+        imgkit.from_file('test.html', 'test.png')
+        imgkit.from_file('test2.html', 'test2.png')
+        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/test.png')
+        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/test2.png')
+        self.image1 = self.image1.resize((600, 200))
+        self.image2 = self.image2.resize((600, 200))
+        print("Your input for report is")
+        print("\t" + test_list[0])
+        self.count += 1
+        print("Our report/prediction is:")
+        if(self.lr_v == 1 and self.lr_a == 1):
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.pred.config(text="You are Happy ")
+            print("\tYou are Happy")
+        elif(self.lr_v == 1 and self.lr_a == 0):
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.pred.config(text="You are just Chilling ")
+            print("\tYou are just Chilling")
+        elif(self.lr_v == 0 and self.lr_a == 1):
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.pred.config(text="You are really Displeased or Pissed ")
+            print("\tYou are really Displeased or Pissed")
+        elif(self.lr_v == 0 and self.lr_a == 0):
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.pred.config(text="You are Bored or just Sad ")
+            print("\tYou are Bored or you are Sad")
+        self.pred.pack()
+        self.image = self.image.resize((100, 100))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.pic.configure(image=self.photo)
+        self.pic.image = self.photo # keep a reference!
+        self.pic.pack(side = "top")
+        self.photo1 = ImageTk.PhotoImage(self.image1)
+        self.pic1.configure(image=self.photo1)
+        self.pic1.image = self.photo1 # keep a reference!
+        self.pic1.pack(side = "top")
+        self.photo2 = ImageTk.PhotoImage(self.image2)
+        self.pic2.configure(image=self.photo2)
+        self.pic2.image = self.photo2 # keep a reference!
+        self.pic2.pack(side = "top")
 
     def predict(self):
         print("Predicting........")
         self.test = count_vect.transform(test_list)
         self.lr_v = cls_valence.predict(self.test)
         self.lr_a = cls_arousal.predict(self.test)
-        print(self.lr_v)
-        print(self.lr_a)
+        #explain_generator(count_vect, cls_valence, test_list[0], ["Positive Valence", "Negative Valence"], "test.html")
+        #explain_generator(count_vect, cls_arousal, test_list[0], ["Positive Aroused", "negative Aroused"], "test2.html")
+        #print(self.lr_v)
+        #print(self.lr_a)
         print("Your input is")
         print("\t" + test_list[0])
         self.count += 1
         print("Our prediction is:")
         if(self.lr_v == 1 and self.lr_a == 1):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.pred.config(text="You are Happy ")
             print("\tYou are Happy")
         elif(self.lr_v == 1 and self.lr_a == 0):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.pred.config(text="You are just Chilling ")
             print("\tYou are just Chilling")
         elif(self.lr_v == 0 and self.lr_a == 1):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.pred.config(text="You are really Displeased or Pissed ")
             print("\tYou are really Displeased or Pissed")
         elif(self.lr_v == 0 and self.lr_a == 0):
-            pil_im = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.jpeg', 'r')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.pred.config(text="You are Bored or just Sad ")
             print("\tYou are Bored or you are Sad")
-        pil_im.show()
+        self.pred.pack()
+        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image1 = self.image1.resize((700, 200))
+        self.image2 = self.image1.resize((700, 200))
+        self.image = self.image.resize((150, 150))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.pic.configure(image=self.photo)
+        self.pic.image = self.photo # keep a reference!
+        self.pic.pack(side = "top")
+        self.photo1 = ImageTk.PhotoImage(self.image1)
+        self.pic1.configure(image=self.photo1)
+        self.pic1.image = self.photo1 # keep a reference!
+        self.pic1.pack(side = "top")
+        self.photo2 = ImageTk.PhotoImage(self.image2)
+        self.pic2.configure(image=self.photo2)
+        self.pic2.image = self.photo2 # keep a reference!
+        self.pic2.pack(side = "top")
+
 
 
 root = tk.Tk()
-root.geometry("400x300")
+root.geometry("1000x800")
 app = Application(master=root)
 app.mainloop()
-
