@@ -281,17 +281,6 @@ elif(lr_v == 0 and lr_a == 0):
 
 print("\n\n\n\nREADY TO ROLL!!!\n")
 
-def explain_generator(vectorizer, classifier, to_predict, target, result_name):
-    from sklearn.pipeline import make_pipeline
-    c = make_pipeline(vectorizer, classifier)
-    print(to_predict)
-    print(c.predict_proba([to_predict]))
-    
-    from lime.lime_text import LimeTextExplainer
-    explainer = LimeTextExplainer(class_names=target)
-    exp = explainer.explain_instance(to_predict, c.predict_proba, num_features=6)
-    exp.save_to_file(result_name)
-
 
 import tkinter as tk
 from PIL import ImageTk, Image
@@ -395,6 +384,7 @@ class Application(tk.Frame):
         print()
         print("_____________________________________________")
         print("\n\nTHIS IS AN EXAMPLE\n")
+        test_list = ['The food is not good, but the music is nice and service is fine']
         self.test = count_vect.transform(test_list)
         self.lr_v = cls_valence.predict(self.test)
         self.lr_a = cls_arousal.predict(self.test)
