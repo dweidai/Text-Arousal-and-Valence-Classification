@@ -27,7 +27,7 @@ from PIL import Image as ImagePIL
 """ Actual Computation Starts Here """
 #"""
 Logger.info("Loading the first file")
-df = pd.read_csv('text_emotion.csv', encoding='latin_1')
+df = pd.read_csv('data/text_emotion.csv', encoding='latin_1')
 df.dropna()
 df.head()
 df_list = [df.columns.values.astype('U').tolist()] + df.values.tolist()
@@ -94,7 +94,7 @@ df_sentence = one_one + zero_zero + zero_one + one_zero
 Logger.info("Done processing the first file")
 Logger.info("The total dataset of the first file is " + str(len(df_sentence)))
 Logger.info("\nStart loading the second file")
-emo = pd.read_csv('emo.csv', encoding='latin_1')
+emo = pd.read_csv('data/emo.csv', encoding='latin_1')
 emo.dropna()
 # fb = pd.read_csv('fbemo.csv')
 # fb.dropna()
@@ -459,45 +459,45 @@ class Application(App):
 		print(self.lr_v)
 		print(self.lr_a)
 		if (self.lr_v == 1 and self.lr_a == 1):
-			self.img.source = 'happy.jpeg'
+			self.img.source = 'picture/happy.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are Happy"
 			print("\tYou are Happy")
 		elif (self.lr_v == 1 and self.lr_a == 0):
-			self.img.source = 'chilling.jpeg'
+			self.img.source = 'picture/chilling.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are just Chilling"
 			print("\tYou are just Chilling")
 		elif (self.lr_v == 0 and self.lr_a == 1):
-			self.img.source = 'angry.jpeg'
+			self.img.source = 'picture/angry.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are really Displeased or Pissed"
 			print("\tYou are really Displeased or Pissed")
 		elif (self.lr_v == 0 and self.lr_a == 0):
-			self.img.source = 'sad.jpeg'
+			self.img.source = 'picture/sad.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are Bored or you are Sad"
@@ -524,22 +524,22 @@ class Application(App):
 		print("\t" + test_list[0])
 		Logger.info("Our report/prediction is:")
 		if (self.lr_v == 1 and self.lr_a == 1):
-			self.img.source = 'happy.png'
+			self.img.source = 'picture/happy.png'
 			self.img.reload()
 			self.scroll.text = "You are Happy "
 			print("\tYou are Happy")
 		elif (self.lr_v == 1 and self.lr_a == 0):
-			self.img.source = 'chilling.png'
+			self.img.source = 'picture/chilling.png'
 			self.img.reload()
 			self.scroll.text = "You are just Chilling "
 			print("\tYou are just Chilling")
 		elif (self.lr_v == 0 and self.lr_a == 1):
-			self.img.source = 'angry.png'
+			self.img.source = 'picture/angry.png'
 			self.img.reload()
 			self.scroll.text = "You are really Displeased or Pissed "
 			print("\tYou are really Displeased or Pissed")
 		elif (self.lr_v == 0 and self.lr_a == 0):
-			self.img.source = 'sad.png'
+			self.img.source = 'picture/sad.png'
 			self.img.reload()
 			self.scroll.text = "You are Bored or just Sad "
 			print("\tYou are Bored or you are Sad")
@@ -577,45 +577,45 @@ class Application(App):
 		#self.count += 1
 		Logger.info("Our prediction is:")
 		if (self.lr_v == 1 and self.lr_a == 1):
-			self.img.source = 'happy.jpeg'
+			self.img.source = 'picture/happy.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are Happy"
 			print("\tYou are Happy")
 		elif (self.lr_v == 1 and self.lr_a == 0):
-			self.img.source = 'chilling.jpeg'
+			self.img.source = 'picture/chilling.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are just Chilling"
 			print("\tYou are just Chilling")
 		elif (self.lr_v == 0 and self.lr_a == 1):
-			self.img.source = 'angry.jpeg'
+			self.img.source = 'picture/angry.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are really Displeased or Pissed"
 			print("\tYou are really Displeased or Pissed")
 		elif (self.lr_v == 0 and self.lr_a == 0):
-			self.img.source = 'sad.jpeg'
+			self.img.source = 'picture/sad.jpeg'
 			self.img.reload()
 			# TODO change image report file name
-			self.img_report_left.source = 'default.png'
+			self.img_report_left.source = 'picture/default.png'
 			self.img_report_left.reload()
-			self.img_report_right.source = 'default.png'
+			self.img_report_right.source = 'picture/default.png'
 			self.img_report_right.reload()
 
 			self.scroll.text = "You are Bored or you are Sad"
@@ -651,7 +651,7 @@ class Application(App):
 		self.get_running_app().stop()
 
 	def test(self, instance):
-		self.img.source = 'sad.jpeg'
+		self.img.source = 'picture/sad.jpeg'
 		# sad_image = Image(source='sad.jpeg', size_hint=(.2, .4))
 		# self.img = sad_image
 		# self.img.opacity = 1

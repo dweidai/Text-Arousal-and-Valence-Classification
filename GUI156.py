@@ -1,6 +1,6 @@
 import pandas as pd
 print("Loading the first file")
-df = pd.read_csv('text_emotion.csv', encoding='latin_1') #TODO
+df = pd.read_csv('data/text_emotion.csv', encoding='latin_1') #TODO
 df.dropna()
 df.head()
 df_list = [df.columns.values.astype('U').tolist()] + df.values.tolist()
@@ -67,7 +67,7 @@ df_sentence = one_one + zero_zero + zero_one + one_zero
 print("Done processing the first file")
 print("The total dataset of the first file is " + str(len(df_sentence)))
 print("\nStart loading the second file")
-emo = pd.read_csv('emo.csv', encoding='latin_1')
+emo = pd.read_csv('data/emo.csv', encoding='latin_1')
 emo.dropna()
 #fb = pd.read_csv('fbemo.csv')
 #fb.dropna()
@@ -347,21 +347,21 @@ class Application(tk.Frame):
         self.pred = tk.Label(self, text=" Our prediction will display here: ")
         self.pred.pack()
         
-        self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/default.png')
         self.image = self.image.resize((600, 200))
         self.photo = ImageTk.PhotoImage(self.image)
         self.pic = tk.Label(image=self.photo)
         self.pic.image = self.photo # keep a reference!
         self.pic.pack(side = "top")
         
-        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/default.png')
         self.image1 = self.image1.resize((600, 200))
         self.photo1 = ImageTk.PhotoImage(self.image1)
         self.pic1 = tk.Label(image=self.photo1)
         self.pic1.image = self.photo1 # keep a reference!
         self.pic1.pack(side = "top")
         
-        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/default.png')
         self.image2 = self.image2.resize((600, 200))
         self.photo2 = ImageTk.PhotoImage(self.image2)
         self.pic2 = tk.Label(image=self.photo2)
@@ -398,20 +398,20 @@ class Application(tk.Frame):
         #print(self.lr_a)
         if(self.lr_v == 1 and self.lr_a == 1):
             #self.img = ImageTk.PhotoImage(file='/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg')
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/happy.png')
             self.pred.config(text="You are Happy ")
             print("\tYou are Happy")
         elif(self.lr_v == 1 and self.lr_a == 0):
             #self.img = ImageTk.PhotoImage(file='/Users/apple/Desktop/CSE 156/final_cse156/happy.jpeg')
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/chilling.png')
             self.pred.config(text="You are just Chilling ")
             print("\tYou are just Chilling")
         elif(self.lr_v == 0 and self.lr_a == 1):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/angry.png')
             self.pred.config(text="You are really Displeased or Pissed ")
             print("\tYou are really Displeased or Pissed")
         elif(self.lr_v == 0 and self.lr_a == 0):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/sad.png')
             self.pred.config(text="You are Bored or just Sad ")
             print("\tYou are Bored or you are Sad")
         self.pred.pack()
@@ -441,19 +441,19 @@ class Application(tk.Frame):
         self.count += 1
         print("Our report/prediction is:")
         if(self.lr_v == 1 and self.lr_a == 1):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/happy.png')
             self.pred.config(text="You are Happy ")
             print("\tYou are Happy")
         elif(self.lr_v == 1 and self.lr_a == 0):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/chilling.png')
             self.pred.config(text="You are just Chilling ")
             print("\tYou are just Chilling")
         elif(self.lr_v == 0 and self.lr_a == 1):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/angry.png')
             self.pred.config(text="You are really Displeased or Pissed ")
             print("\tYou are really Displeased or Pissed")
         elif(self.lr_v == 0 and self.lr_a == 0):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/sad.png')
             self.pred.config(text="You are Bored or just Sad ")
             print("\tYou are Bored or you are Sad")
         self.pred.pack()
@@ -485,24 +485,24 @@ class Application(tk.Frame):
         self.count += 1
         print("Our prediction is:")
         if(self.lr_v == 1 and self.lr_a == 1):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/happy.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/happy.png')
             self.pred.config(text="You are Happy ")
             print("\tYou are Happy")
         elif(self.lr_v == 1 and self.lr_a == 0):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/chilling.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/chilling.png')
             self.pred.config(text="You are just Chilling ")
             print("\tYou are just Chilling")
         elif(self.lr_v == 0 and self.lr_a == 1):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/angry.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/angry.png')
             self.pred.config(text="You are really Displeased or Pissed ")
             print("\tYou are really Displeased or Pissed")
         elif(self.lr_v == 0 and self.lr_a == 0):
-            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/sad.png')
+            self.image = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/sad.png')
             self.pred.config(text="You are Bored or just Sad ")
             print("\tYou are Bored or you are Sad")
         self.pred.pack()
-        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
-        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/default.png')
+        self.image1 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/default.png')
+        self.image2 = Image.open('/Users/apple/Desktop/CSE 156/final_cse156/picture/default.png')
         self.image1 = self.image1.resize((700, 200))
         self.image2 = self.image1.resize((700, 200))
         self.image = self.image.resize((150, 150))
