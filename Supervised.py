@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import numpy as np
 
 # In[180]:
 
@@ -212,13 +213,61 @@ def evaluate(X, yt, cls, name='data'):
     return acc
 
 
+def check_result():
+    from sklearn.pipeline import make_pipeline
+    yp = cls.predict(sentiment.devX)
+    for k in range(len(sentiment.dev_data)):
+        if k < 100 and yp[k] != sentiment.devy[k]:
+            print("\n", k)
+            c = make_pipeline(sentiment.count_vect, cls)
+            print(sentiment.dev_data[k])
+            print(c.predict_proba([sentiment.dev_data[k]]))
+
+            from lime.lime_text import LimeTextExplainer
+            target = ['NEGATIVE', 'POSITIVE']
+            explainer = LimeTextExplainer(class_names=target)
+            exp = explainer.explain_instance(sentiment.dev_data[k], c.predict_proba, num_features=6)
+            print('Document id: %d' % k)
+            yp = cls.predict(sentiment.devX)
+            print("real answer is: ", sentiment.devy[k])
+            print("prediction is: ", yp[k])
+            print('Probability(NEGATIVE) =', c.predict_proba([sentiment.dev_data[k]])[0, 0])
+            print('True class: %s' % sentiment.dev_labels[k])
+            msf = exp.as_list()
+            print(msf)
+
+
+def check_result2(sentence):
+    predict = [sentence]
+    transfered = sentiment.count_vect.transform(predict)
+    from sklearn.pipeline import make_pipeline
+    yp = cls.predict(transfered)
+    for k in range(len(predict)):
+
+        c = make_pipeline(sentiment.count_vect, cls)
+        print("\n")
+        print(predict[0])
+        print(c.predict_proba([predict[0]]))
+
+        from lime.lime_text import LimeTextExplainer
+        target = ['NEGATIVE', 'POSITIVE']
+        explainer = LimeTextExplainer(class_names=target)
+        exp = explainer.explain_instance(predict[0], c.predict_proba, num_features=6)
+        yp = cls.predict(transfered)
+        print("prediction is: ", yp[0])
+        print('Probability(NEGATIVE) =', c.predict_proba([predict[0]])[0, 0])
+        msf = exp.as_list()
+        print(msf)
+
+
+
 # In[164]:
 
 
 i = 1
 max_acc = 0
 max_i = 1
-while(i<25):
+while(i<2):
     print(i)
     print("Reading data")
     tarfname = "data/sentiment.tar.gz"
@@ -230,9 +279,9 @@ while(i<25):
     middle =np.argsort(coefficients)[k:-k]
     middle_words = []
     print("Colletcting Middle Ambiguous Words")
-    for j in middle:
-        middle_words.append(sentiment.count_vect.get_feature_names()[j])
-    middle_words = set(dict.fromkeys([stemmer.stem(word) for word in middle_words]))
+    #for j in middle:
+     #   middle_words.append(sentiment.count_vect.get_feature_names()[j])
+    #middle_words = set(dict.fromkeys([stemmer.stem(word) for word in middle_words]))
     print("Reading data")
     tarfname = "data/sentiment.tar.gz"
     sentiment = read_files(tarfname)
@@ -240,45 +289,50 @@ while(i<25):
     print("\nEvaluating")
     evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
     acc = evaluate(sentiment.devX, sentiment.devy, cls, 'dev')
-    if( acc > max_acc):
-        max_acc = acc
-        max_i = i
-    i = i+1
-print( max_i)
-print( max_acc)
+    check_result()
+    while True:
+        val = input("Enter your sentence: ")
+        check_result2(val)
+
+#     if( acc > max_acc):
+#         max_acc = acc
+#         max_i = i
+#     i = i+1
+# print( max_i)
+# print( max_acc)
 
 
 # In[189]:
 
 
-print("Reading data")
-tarfname = "data/sentiment.tar.gz"
-sentiment = read_files(tarfname)
-cls = train_classifier(sentiment.trainX, sentiment.trainy)
-coefficients=cls.coef_[0]
-length = len(coefficients)
-k = (int)(length/max_i)
-middle =np.argsort(coefficients)[k:-k]
-middle_words = []
-print("Colletcting Middle Ambiguous Words")
-#for j in middle:
-#    middle_words.append(sentiment.count_vect.get_feature_names()[j])
-#middle_words = set(dict.fromkeys([stemmer.stem(word) for word in middle_words]))
-print("Reading data")
-tarfname = "data/sentiment.tar.gz"
-sentiment = read_files(tarfname)
-cls = train_classifier(sentiment.trainX, sentiment.trainy)
-print("\nEvaluating")
-evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
-acc = evaluate(sentiment.devX, sentiment.devy, cls, 'dev')
-
+# print("Reading data")
+# tarfname = "data/sentiment.tar.gz"
+# sentiment = read_files(tarfname)
+# cls = train_classifier(sentiment.trainX, sentiment.trainy)
+# coefficients=cls.coef_[0]
+# length = len(coefficients)
+# k = (int)(length/max_i)
+# middle =np.argsort(coefficients)[k:-k]
+# middle_words = []
+# print("Colletcting Middle Ambiguous Words")
+# #for j in middle:
+# #    middle_words.append(sentiment.count_vect.get_feature_names()[j])
+# #middle_words = set(dict.fromkeys([stemmer.stem(word) for word in middle_words]))
+# print("Reading data")
+# tarfname = "data/sentiment.tar.gz"
+# sentiment = read_files(tarfname)
+# cls = train_classifier(sentiment.trainX, sentiment.trainy)
+# print("\nEvaluating")
+# evaluate(sentiment.trainX, sentiment.trainy, cls, 'train')
+# acc = evaluate(sentiment.devX, sentiment.devy, cls, 'dev')
+# check_result()
 
 # In[191]:
 
 
-print("\nReading unlabeled data")
-unlabeled = read_unlabeled(tarfname, sentiment)
-print("Writing predictions to a file")
-write_pred_kaggle_file(unlabeled, cls, "data/sentiment-pred.csv", sentiment)
-print("done")
+# print("\nReading unlabeled data")
+# unlabeled = read_unlabeled(tarfname, sentiment)
+# print("Writing predictions to a file")
+# write_pred_kaggle_file(unlabeled, cls, "data/sentiment-pred.csv", sentiment)
+# print("done")
 

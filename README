@@ -1,0 +1,14 @@
+Software requirement:
+    1. Python 3.*
+    2. Packages needed: numpy, pandas, nltk, lime, imgkit, PIL, sklearn
+    3. GUI Packages: tkinter, kivy
+
+To run sentiment classification:
+    python supervised.py
+
+The following are for emotion classification based on arousal and valence levels.
+To run development version:
+    python tkinter_GUI.py
+
+To run the product version:
+    python kivy_GUI.py
